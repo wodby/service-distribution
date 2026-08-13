@@ -1,0 +1,223 @@
+name: distribution
+icon: distribution
+type: service
+title: Distribution Registry
+scalable: false
+
+options:
+- version: '3.1'
+  tag: '3.1.1'
+  default: true
+
+endpoints:
+- name: registry
+  main: true
+  ports:
+  - name: http
+    number: 5000
+    protocol: http
+    main: true
+
+labels:
+- distribution
+- registry
+- oci-registry
+
+settings:
+- name: s3_bucket
+  title: S3 bucket
+  description: Required when an AWS or S3-compatible storage integration is attached.
+  placeholder: registry-bucket
+  var: REGISTRY_STORAGE_S3_BUCKET
+- name: gcs_bucket
+  title: Google Cloud Storage bucket
+  description: Required when a Google Cloud Storage integration is attached.
+  placeholder: registry-bucket
+  var: REGISTRY_STORAGE_GCS_BUCKET
+- name: s3_root
+  title: S3 root directory
+  description: Optional prefix used inside an S3 or S3-compatible bucket.
+  placeholder: /registry
+  var: REGISTRY_STORAGE_S3_ROOTDIRECTORY
+- name: gcs_root
+  title: Google Cloud Storage root directory
+  description: Optional prefix used inside a Google Cloud Storage bucket.
+  placeholder: /registry
+  var: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
+
+tokens:
+- name: http-secret
+  generate:
+    regex: '[0-9a-z]{64}'
+- name: password
+  generate:
+    regex: '[0-9a-z-]{32}'
+
+env:
+- name: REGISTRY_HTTP_ADDR
+  value: 0.0.0.0:5000
+- name: REGISTRY_HTTP_DEBUG_ADDR
+  value: 0.0.0.0:5001
+- name: REGISTRY_HTTP_SECRET
+  value: '{{http-secret}}'
+  secret: true
+- name: REGISTRY_STORAGE
+  value: filesystem
+- name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+  value: /var/lib/registry
+- name: REGISTRY_STORAGE_DELETE_ENABLED
+  value: 'true'
+- name: REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR
+  value: inmemory
+- name: REGISTRY_HEALTH_STORAGEDRIVER_ENABLED
+  value: 'true'
+- name: REGISTRY_HEALTH_STORAGEDRIVER_INTERVAL
+  value: 10s
+- name: REGISTRY_HEALTH_STORAGEDRIVER_THRESHOLD
+  value: '3'
+- name: REGISTRY_AUTH
+  value: htpasswd
+- name: REGISTRY_AUTH_HTPASSWD_REALM
+  value: Distribution Registry
+- name: REGISTRY_AUTH_HTPASSWD_PATH
+  value: /auth/htpasswd
+- name: WODBY_REGISTRY_PASSWORD
+  value: '{{password}}'
+  secret: true
+
+links:
+- name: redis
+  title: Redis metadata cache
+  required: false
+  env:
+  - name: REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR
+    value: redis
+  - name: REGISTRY_REDIS_ADDRS_0
+    value: '{{link.host}}:{{link.port}}'
+  - name: REGISTRY_REDIS_PASSWORD
+    value: '{{link.tokens.password}}'
+    secret: true
+  selectors:
+  - type: datastore
+    labels:
+    - valkey
+  - type: datastore
+    labels:
+    - redis
+- name: auth
+  title: Delegated token authentication
+  required: false
+  env:
+  - name: REGISTRY_AUTH
+    value: token
+  - name: REGISTRY_AUTH_TOKEN_REALM
+    value: '{{link.tokens.registry-realm}}'
+  - name: REGISTRY_AUTH_TOKEN_SERVICE
+    value: '{{link.tokens.registry-service}}'
+  - name: REGISTRY_AUTH_TOKEN_ISSUER
+    value: '{{link.tokens.registry-issuer}}'
+  - name: REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE
+    value: /mnt/config/auth/rootcertbundle.crt
+  certs:
+  - name: registry-token
+    helm:
+      cert: auth.token.rootCertBundle
+  selectors:
+  - type: service
+    labels:
+    - distribution-auth
+
+integrations:
+- name: storage
+  title: Object storage
+  type: storage
+  required: false
+  providers:
+  - name: aws
+    env:
+    - name: REGISTRY_STORAGE
+      value: s3
+    - name: REGISTRY_STORAGE_S3_ACCESSKEY
+      value: '{{integration.variables.AWS_ACCESS_KEY_ID}}'
+      secret: true
+    - name: REGISTRY_STORAGE_S3_SECRETKEY
+      value: '{{integration.variables.AWS_SECRET_ACCESS_KEY}}'
+      secret: true
+    - name: REGISTRY_STORAGE_S3_REGION
+      value: '{{integration.variables.AWS_REGION}}'
+  - name: gcp
+    env:
+    - name: REGISTRY_STORAGE
+      value: gcs
+    - name: WODBY_REGISTRY_GCS_KEYFILE
+      value: '{{integration.fields.service_account}}'
+      secret: true
+    - name: REGISTRY_STORAGE_GCS_KEYFILE
+      value: /mnt/config/env/WODBY_REGISTRY_GCS_KEYFILE
+  - name: s3-compatible
+    env:
+    - name: REGISTRY_STORAGE
+      value: s3
+    - name: REGISTRY_STORAGE_S3_ACCESSKEY
+      value: '{{integration.variables.S3_ACCESS_KEY_ID}}'
+      secret: true
+    - name: REGISTRY_STORAGE_S3_SECRETKEY
+      value: '{{integration.variables.S3_SECRET_ACCESS_KEY}}'
+      secret: true
+    - name: REGISTRY_STORAGE_S3_REGIONENDPOINT
+      value: '{{integration.variables.S3_ENDPOINT}}'
+    - name: REGISTRY_STORAGE_S3_REGION
+      value: '{{integration.variables.S3_REGION}}'
+    - name: REGISTRY_STORAGE_S3_FORCEPATHSTYLE
+      value: 'true'
+
+volumes:
+- name: data
+  title: Registry data
+  optional: true
+  helm:
+    labels: persistence.labels
+    values:
+    - name: persistence.enabled
+      value: true
+    - name: persistence.size
+      value: '{{volumes.data.size}}Gi'
+    - name: persistence.storageClass
+      value: '{{volumes.data.storageClassName}}'
+
+helm:
+  name: wodby
+  source: oci://registry-1.docker.io/wodby/distribution
+  chart: oci://registry-1.docker.io/wodby/distribution
+  version: 0.1.0
+  valueMappings:
+    replicas: replicaCount
+    fullnameOverride: fullnameOverride
+    serviceAccountName: serviceAccount.name
+    serviceAccountCreate: serviceAccount.create
+  values:
+  - name: auth.htpasswd.enabled
+    value: true
+  - name: auth.htpasswd.username
+    value: admin
+  - name: existingEnvSecret
+    value: '{{service.secrets.env}}'
+
+workloads:
+- name: main
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: '{{helm.release}}'
+  kind: deployment
+  primary: true
+  helm:
+    labels: podLabels
+    annotations: podAnnotations
+    volumes: extraVolumes
+  containers:
+  - name: distribution
+    image: registry
+    helm:
+      resources: resources
+      env: envVars
+      mounts: extraVolumeMounts
