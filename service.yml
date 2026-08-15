@@ -81,7 +81,7 @@ env:
   value: Distribution Registry
 - name: REGISTRY_AUTH_HTPASSWD_PATH
   value: /auth/htpasswd
-- name: WODBY_REGISTRY_PASSWORD
+- name: DISTRIBUTION_HTPASSWD_PASSWORD
   value: '{{password}}'
   secret: true
 
@@ -149,11 +149,11 @@ integrations:
     env:
     - name: REGISTRY_STORAGE
       value: gcs
-    - name: WODBY_REGISTRY_GCS_KEYFILE
+    - name: DISTRIBUTION_GCS_KEYFILE
       value: '{{integration.fields.service_account}}'
       secret: true
     - name: REGISTRY_STORAGE_GCS_KEYFILE
-      value: /mnt/config/env/WODBY_REGISTRY_GCS_KEYFILE
+      value: /mnt/config/env/DISTRIBUTION_GCS_KEYFILE
   - name: s3-compatible
     env:
     - name: REGISTRY_STORAGE
@@ -189,7 +189,7 @@ helm:
   name: wodby
   source: oci://registry-1.docker.io/wodby/distribution
   chart: oci://registry-1.docker.io/wodby/distribution
-  version: 0.1.0
+  version: 0.1.1
   valueMappings:
     replicas: replicaCount
     fullnameOverride: fullnameOverride

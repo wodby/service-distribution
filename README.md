@@ -18,6 +18,13 @@ Delegated token authentication is optional. The linked authentication service
 owns the signing key and exposes only its public `registry-token` certificate
 to Distribution.
 
+The generated basic-auth password is stored under the internal
+`DISTRIBUTION_HTPASSWD_PASSWORD` secret key. Google service-account JSON is
+stored as `DISTRIBUTION_GCS_KEYFILE` and mounted into the container; the native
+`REGISTRY_STORAGE_GCS_KEYFILE` variable points to that file. These helper names
+are not Registry configuration fields and do not use Wodby's reserved
+environment namespace.
+
 Validate the manifest with:
 
 ```bash
