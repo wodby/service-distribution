@@ -16,7 +16,11 @@ Redis services.
 
 Delegated token authentication is optional. The linked authentication service
 owns the signing key and exposes only its public `registry-token` certificate
-to Distribution.
+to Distribution. New auth services should export `DISTRIBUTION_AUTH_REALM`,
+`DISTRIBUTION_AUTH_SERVICE`, and `DISTRIBUTION_AUTH_ISSUER` and use the
+`auth-service` link. The original `auth` link remains available for services
+that export the legacy `registry-realm`, `registry-service`, and
+`registry-issuer` service tokens.
 
 The generated basic-auth password is stored under the internal
 `DISTRIBUTION_HTPASSWD_PASSWORD` secret key. Google service-account JSON is

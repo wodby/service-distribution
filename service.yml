@@ -105,7 +105,7 @@ links:
     labels:
     - redis
 - name: auth
-  title: Delegated token authentication
+  title: Delegated token authentication (legacy token exports)
   required: false
   env:
   - name: REGISTRY_AUTH
@@ -116,6 +116,28 @@ links:
     value: '{{link.tokens.registry-service}}'
   - name: REGISTRY_AUTH_TOKEN_ISSUER
     value: '{{link.tokens.registry-issuer}}'
+  - name: REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE
+    value: /mnt/config/auth/rootcertbundle.crt
+  certs:
+  - name: registry-token
+    helm:
+      cert: auth.token.rootCertBundle
+  selectors:
+  - type: service
+    labels:
+    - distribution-auth
+- name: auth-service
+  title: Delegated token authentication
+  required: false
+  env:
+  - name: REGISTRY_AUTH
+    value: token
+  - name: REGISTRY_AUTH_TOKEN_REALM
+    value: '{{link.env.DISTRIBUTION_AUTH_REALM}}'
+  - name: REGISTRY_AUTH_TOKEN_SERVICE
+    value: '{{link.env.DISTRIBUTION_AUTH_SERVICE}}'
+  - name: REGISTRY_AUTH_TOKEN_ISSUER
+    value: '{{link.env.DISTRIBUTION_AUTH_ISSUER}}'
   - name: REGISTRY_AUTH_TOKEN_ROOTCERTBUNDLE
     value: /mnt/config/auth/rootcertbundle.crt
   certs:
