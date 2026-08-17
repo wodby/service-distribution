@@ -23,28 +23,6 @@ labels:
 - registry
 - oci-registry
 
-settings:
-- name: s3_bucket
-  title: S3 bucket
-  description: Required when an AWS or S3-compatible storage integration is attached.
-  placeholder: registry-bucket
-  var: REGISTRY_STORAGE_S3_BUCKET
-- name: gcs_bucket
-  title: Google Cloud Storage bucket
-  description: Required when a Google Cloud Storage integration is attached.
-  placeholder: registry-bucket
-  var: REGISTRY_STORAGE_GCS_BUCKET
-- name: s3_root
-  title: S3 root directory
-  description: Optional prefix used inside an S3 or S3-compatible bucket.
-  placeholder: /registry
-  var: REGISTRY_STORAGE_S3_ROOTDIRECTORY
-- name: gcs_root
-  title: Google Cloud Storage root directory
-  description: Optional prefix used inside a Google Cloud Storage bucket.
-  placeholder: /registry
-  var: REGISTRY_STORAGE_GCS_ROOTDIRECTORY
-
 tokens:
 - name: http-secret
   generate:
@@ -61,10 +39,6 @@ env:
 - name: REGISTRY_HTTP_SECRET
   value: '{{http-secret}}'
   secret: true
-- name: REGISTRY_STORAGE
-  value: filesystem
-- name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
-  value: /var/lib/registry
 - name: REGISTRY_STORAGE_DELETE_ENABLED
   value: 'true'
 - name: REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR

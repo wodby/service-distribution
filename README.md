@@ -14,6 +14,15 @@ persistent storage, AWS S3, Google Cloud Storage, and generic S3-compatible
 object storage. A Redis-compatible metadata-cache link accepts both Valkey and
 Redis services.
 
+The Docker Official Image configuration remains authoritative for the default
+filesystem driver and its `/var/lib/registry` root. Object-storage integrations
+select the `s3` or `gcs` driver and provide credentials. Driver-specific bucket
+and optional root-directory variables belong to the consuming stack or app
+service, for example `REGISTRY_STORAGE_S3_BUCKET` or
+`REGISTRY_STORAGE_GCS_BUCKET`. Keeping those variables outside the generic
+service prevents unused storage drivers from being materialized with empty
+settings; Distribution rejects configurations containing more than one driver.
+
 Delegated token authentication is optional. The linked authentication service
 owns the signing key and exposes only its public `registry-token` certificate
 to Distribution. New auth services should export `DISTRIBUTION_AUTH_REALM`,
