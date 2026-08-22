@@ -124,48 +124,28 @@ links:
     - distribution-auth
 
 integrations:
-- name: storage
-  title: Object storage
-  type: storage
+- name: gcp
+  title: Google Cloud Storage
+  type: variable
   required: false
-  providers:
-  - name: aws
-    env:
-    - name: REGISTRY_STORAGE
-      value: s3
-    - name: REGISTRY_STORAGE_S3_ACCESSKEY
-      value: '{{integration.variables.AWS_ACCESS_KEY_ID}}'
-      secret: true
-    - name: REGISTRY_STORAGE_S3_SECRETKEY
-      value: '{{integration.variables.AWS_SECRET_ACCESS_KEY}}'
-      secret: true
-    - name: REGISTRY_STORAGE_S3_REGION
-      value: '{{integration.variables.AWS_REGION}}'
-  - name: gcp
-    env:
-    - name: REGISTRY_STORAGE
-      value: gcs
-    - name: DISTRIBUTION_GCS_KEYFILE
-      value: '{{integration.fields.service_account}}'
-      secret: true
-    - name: REGISTRY_STORAGE_GCS_KEYFILE
-      value: /mnt/config/env/DISTRIBUTION_GCS_KEYFILE
-  - name: s3-compatible
-    env:
-    - name: REGISTRY_STORAGE
-      value: s3
-    - name: REGISTRY_STORAGE_S3_ACCESSKEY
-      value: '{{integration.variables.S3_ACCESS_KEY_ID}}'
-      secret: true
-    - name: REGISTRY_STORAGE_S3_SECRETKEY
-      value: '{{integration.variables.S3_SECRET_ACCESS_KEY}}'
-      secret: true
-    - name: REGISTRY_STORAGE_S3_REGIONENDPOINT
-      value: '{{integration.variables.S3_ENDPOINT}}'
-    - name: REGISTRY_STORAGE_S3_REGION
-      value: '{{integration.variables.S3_REGION}}'
-    - name: REGISTRY_STORAGE_S3_FORCEPATHSTYLE
-      value: 'true'
+  variables:
+  - name: REGISTRY_STORAGE
+  - name: REGISTRY_STORAGE_GCS_BUCKET
+  - name: DISTRIBUTION_GCS_KEYFILE
+    secret: true
+  - name: REGISTRY_STORAGE_GCS_KEYFILE
+- name: aws
+  title: Amazon S3
+  type: variable
+  required: false
+  variables:
+  - name: REGISTRY_STORAGE
+  - name: REGISTRY_STORAGE_S3_BUCKET
+  - name: REGISTRY_STORAGE_S3_ACCESSKEY
+    secret: true
+  - name: REGISTRY_STORAGE_S3_SECRETKEY
+    secret: true
+  - name: REGISTRY_STORAGE_S3_REGION
 
 volumes:
 - name: data

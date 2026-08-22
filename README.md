@@ -15,13 +15,15 @@ object storage. A Redis-compatible metadata-cache link accepts both Valkey and
 Redis services.
 
 The Docker Official Image configuration remains authoritative for the default
-filesystem driver and its `/var/lib/registry` root. Object-storage integrations
-select the `s3` or `gcs` driver and provide credentials. Driver-specific bucket
-and optional root-directory variables belong to the consuming stack or app
-service, for example `REGISTRY_STORAGE_S3_BUCKET` or
-`REGISTRY_STORAGE_GCS_BUCKET`. Keeping those variables outside the generic
-service prevents unused storage drivers from being materialized with empty
-settings; Distribution rejects configurations containing more than one driver.
+filesystem driver and its `/var/lib/registry` root. Google Cloud Storage and
+Amazon S3 use separate optional variable integrations. Each integration exports
+the complete Distribution environment contract for its driver, including the
+bucket and credentials. Attach at most one of them; Distribution rejects
+configurations containing more than one storage driver.
+
+The GCP integration stores the service-account JSON in
+`DISTRIBUTION_GCS_KEYFILE` and sets `REGISTRY_STORAGE_GCS_KEYFILE` to its mounted
+path, normally `/mnt/config/env/DISTRIBUTION_GCS_KEYFILE`.
 
 Delegated token authentication is optional. The linked authentication service
 owns the signing key and exposes only its public `registry-token` certificate
