@@ -10,16 +10,16 @@ Run CNCF Distribution Registry v3 with the Docker Official Image on Wodby.
 
 The service uses `registry:3.1.1`, exposes the Registry HTTP API on port 5000,
 and enables bcrypt-backed basic authentication by default. It supports local
-persistent storage, AWS S3, Google Cloud Storage, and generic S3-compatible
-object storage. A Redis-compatible metadata-cache link accepts both Valkey and
-Redis services.
+persistent storage, AWS S3, and Google Cloud Storage. A Redis-compatible
+metadata-cache link accepts both Valkey and Redis services.
 
 The Docker Official Image configuration remains authoritative for the default
 filesystem driver and its `/var/lib/registry` root. Google Cloud Storage and
-Amazon S3 use separate optional variable integrations. Each integration exports
-the complete Distribution environment contract for its driver, including the
-bucket and credentials. Attach at most one of them; Distribution rejects
-configurations containing more than one storage driver.
+Amazon S3 use separate optional variable integrations. Each integration asks
+its provider only for bucket and credential inputs, then maps those inputs to
+the complete Distribution runtime contract. Driver names and the GCP keyfile
+path are service-owned constants rather than provider fields. Attach at most
+one storage integration.
 
 The GCP integration stores the service-account JSON in
 `DISTRIBUTION_GCS_KEYFILE` and sets `REGISTRY_STORAGE_GCS_KEYFILE` to its mounted
