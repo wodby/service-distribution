@@ -129,23 +129,41 @@ integrations:
   type: variable
   required: false
   variables:
-  - name: REGISTRY_STORAGE
   - name: REGISTRY_STORAGE_GCS_BUCKET
   - name: DISTRIBUTION_GCS_KEYFILE
     secret: true
+  env:
+  - name: REGISTRY_STORAGE
+    value: gcs
+  - name: REGISTRY_STORAGE_GCS_BUCKET
+    value: '{{integration.variables.REGISTRY_STORAGE_GCS_BUCKET}}'
+  - name: DISTRIBUTION_GCS_KEYFILE
+    value: '{{integration.variables.DISTRIBUTION_GCS_KEYFILE}}'
+    secret: true
   - name: REGISTRY_STORAGE_GCS_KEYFILE
+    value: /mnt/config/env/DISTRIBUTION_GCS_KEYFILE
 - name: aws
   title: Amazon S3
   type: variable
   required: false
   variables:
-  - name: REGISTRY_STORAGE
   - name: REGISTRY_STORAGE_S3_BUCKET
   - name: REGISTRY_STORAGE_S3_ACCESSKEY
-    secret: true
   - name: REGISTRY_STORAGE_S3_SECRETKEY
     secret: true
   - name: REGISTRY_STORAGE_S3_REGION
+  env:
+  - name: REGISTRY_STORAGE
+    value: s3
+  - name: REGISTRY_STORAGE_S3_BUCKET
+    value: '{{integration.variables.REGISTRY_STORAGE_S3_BUCKET}}'
+  - name: REGISTRY_STORAGE_S3_ACCESSKEY
+    value: '{{integration.variables.REGISTRY_STORAGE_S3_ACCESSKEY}}'
+  - name: REGISTRY_STORAGE_S3_SECRETKEY
+    value: '{{integration.variables.REGISTRY_STORAGE_S3_SECRETKEY}}'
+    secret: true
+  - name: REGISTRY_STORAGE_S3_REGION
+    value: '{{integration.variables.REGISTRY_STORAGE_S3_REGION}}'
 
 volumes:
 - name: data
