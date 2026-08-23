@@ -16,10 +16,9 @@ metadata-cache link accepts both Valkey and Redis services.
 The Docker Official Image configuration remains authoritative for the default
 filesystem driver and its `/var/lib/registry` root. Google Cloud Storage and
 Amazon S3 use separate optional variable integrations. Each integration asks
-its provider only for bucket and credential inputs, then maps those inputs to
-the complete Distribution runtime contract. Driver names and the GCP keyfile
-path are service-owned constants rather than provider fields. Attach at most
-one storage integration.
+its provider only for bucket and credential inputs. Distribution injects those
+values together with its service-owned driver and GCP keyfile-path variables.
+Attach at most one storage integration.
 
 The GCP integration stores the service-account JSON in
 `DISTRIBUTION_GCS_KEYFILE` and sets `REGISTRY_STORAGE_GCS_KEYFILE` to its mounted
