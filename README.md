@@ -11,7 +11,10 @@ Run CNCF Distribution Registry v3 with the Docker Official Image on Wodby.
 The service uses `registry:3.1.1`, exposes the Registry HTTP API on port 5000,
 and enables bcrypt-backed basic authentication by default. It supports local
 persistent storage, AWS S3, and Google Cloud Storage. A Redis-compatible
-metadata-cache link accepts both Valkey and Redis services.
+metadata-cache link accepts both Valkey and Redis services. The linked endpoint
+is passed as the complete `REGISTRY_REDIS_ADDRS` list because Distribution 3.1.1
+does not reliably populate scalar list entries from indexed environment
+variables.
 
 The Docker Official Image configuration remains authoritative for the default
 filesystem driver and its `/var/lib/registry` root. Google Cloud Storage and
