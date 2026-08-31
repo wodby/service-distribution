@@ -66,8 +66,8 @@ links:
   env:
   - name: REGISTRY_STORAGE_CACHE_BLOBDESCRIPTOR
     value: redis
-  - name: REGISTRY_REDIS_ADDRS_0
-    value: '{{link.host}}:{{link.port}}'
+  - name: REGISTRY_REDIS_ADDRS
+    value: '["{{link.host}}:{{link.port}}"]'
   - name: REGISTRY_REDIS_PASSWORD
     value: '{{link.tokens.password}}'
     secret: true
