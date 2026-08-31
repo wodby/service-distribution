@@ -2,7 +2,7 @@ name: distribution
 icon: distribution
 type: service
 title: Distribution Registry
-scalable: false
+scalable: true
 
 options:
 - version: '3.1'
@@ -180,10 +180,12 @@ volumes:
       value: '{{volumes.data.storageClassName}}'
 
 deployment:
-  strategy: recreate
+  strategy: rolling
+  maxUnavailable: 0
+  maxSurge: 1
   minReady: 10s
   progressDeadline: 15m
-  shutdownGracePeriod: 30s
+  shutdownGracePeriod: 60s
 
 helm:
   name: wodby

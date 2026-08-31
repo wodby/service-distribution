@@ -16,6 +16,20 @@ is passed as the complete `REGISTRY_REDIS_ADDRS` list because Distribution 3.1.1
 does not reliably populate scalar list entries from indexed environment
 variables.
 
+Releases use a rolling deployment with one surge replica and no unavailable
+replicas. The chart removes terminating pods from service endpoints before
+Distribution receives `SIGTERM`, then gives active HTTP connections up to 45
+seconds to drain within a 60-second pod termination grace period. The service
+can also be scaled horizontally because every replica receives the same HTTP
+secret and linked metadata cache configuration.
+
+Zero-downtime releases and horizontal scaling require every replica to access
+the same registry storage. GCS and S3 provide that shared storage directly.
+Filesystem storage works only when the Kubernetes storage class can mount the
+same registry root into both the old and surge pods; a `ReadWriteOnce` volume
+may stall the rollout, so use object storage when zero-downtime releases must be
+guaranteed across nodes.
+
 The Docker Official Image configuration remains authoritative for the default
 filesystem driver and its `/var/lib/registry` root. Google Cloud Storage and
 Amazon S3 use separate optional variable integrations. Each integration asks
