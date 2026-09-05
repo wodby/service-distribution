@@ -122,6 +122,31 @@ links:
   - type: service
     labels:
     - distribution-auth
+- name: notifications
+  title: Registry event notifications
+  required: false
+  env:
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_NAME
+    value: linked-service
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_URL
+    value: '{{link.env.WODBY1_API_URL}}/api/v1/registry/notifications'
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_HEADERS
+    value: '{"Authorization":["Bearer {{link.tokens.registry_notification_secret}}"]}'
+    secret: true
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_TIMEOUT
+    value: 5s
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_THRESHOLD
+    value: '10'
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_BACKOFF
+    value: 1s
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_IGNORE_MEDIATYPES
+    value: '["application/octet-stream"]'
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_IGNORE_ACTIONS
+    value: '["pull","mount"]'
+  selectors:
+  - type: service
+    labels:
+    - distribution-notifications
 
 integrations:
 - name: gcp

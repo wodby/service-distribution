@@ -49,6 +49,13 @@ to Distribution. New auth services should export `DISTRIBUTION_AUTH_REALM`,
 that export the legacy `registry-realm`, `registry-service`, and
 `registry-issuer` service tokens.
 
+Registry event delivery is optional through the `notifications` link. A linked
+service must advertise `distribution-notifications`, export its public base URL
+as `WODBY1_API_URL`, and expose a dedicated `registry_notification_secret`
+token. Distribution posts manifest push and delete events to
+`/api/v1/registry/notifications` with that token in the Authorization header;
+pull, mount, and blob events are filtered at the registry.
+
 The generated basic-auth password is stored under the internal
 `DISTRIBUTION_HTPASSWD_PASSWORD` secret key. Google service-account JSON is
 stored as `DISTRIBUTION_GCS_KEYFILE` and mounted into the container; the native
