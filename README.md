@@ -49,12 +49,15 @@ to Distribution. New auth services should export `DISTRIBUTION_AUTH_REALM`,
 that export the legacy `registry-realm`, `registry-service`, and
 `registry-issuer` service tokens.
 
-Registry event delivery is optional through the `notifications` link. A linked
-service must advertise `distribution-notifications`, export its public base URL
-as `WODBY1_API_URL`, and expose a dedicated `registry_notification_secret`
-token. Distribution posts manifest push and delete events to
-`/api/v1/registry/notifications` with that token in the Authorization header;
-pull, mount, and blob events are filtered at the registry.
+Registry event delivery is optional through the `notifications-service` link.
+A linked service must advertise `distribution-notifications`, export its complete
+callback URL as `DISTRIBUTION_NOTIFICATIONS_URL`, and expose a dedicated
+`registry_notification_secret` token. Distribution sends that token as a Bearer
+Authorization header; pull, mount, and blob events are filtered at the registry.
+The endpoint headers remain secret environment data. The existing `notifications`
+link retains the legacy `WODBY1_API_URL` base URL and fixed
+`/api/v1/registry/notifications` path. Connect only one notification link because
+both configure the first Distribution notification endpoint.
 
 The generated basic-auth password is stored under the internal
 `DISTRIBUTION_HTPASSWD_PASSWORD` secret key. Google service-account JSON is

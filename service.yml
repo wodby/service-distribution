@@ -148,6 +148,32 @@ links:
     labels:
     - distribution-notifications
 
+- name: notifications-service
+  title: Registry event receiver
+  required: false
+  env:
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_NAME
+    value: linked-service
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_URL
+    value: '{{link.env.DISTRIBUTION_NOTIFICATIONS_URL}}'
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_HEADERS
+    value: '{"Authorization":["Bearer {{link.tokens.registry_notification_secret}}"]}'
+    secret: true
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_TIMEOUT
+    value: 5s
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_THRESHOLD
+    value: '5'
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_BACKOFF
+    value: 10s
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_IGNORE_MEDIATYPES
+    value: '["application/octet-stream"]'
+  - name: REGISTRY_NOTIFICATIONS_ENDPOINTS_0_IGNORE_ACTIONS
+    value: '["pull","mount"]'
+  selectors:
+  - type: service
+    labels:
+    - distribution-notifications
+
 integrations:
 - name: gcp
   title: Google Cloud Storage
