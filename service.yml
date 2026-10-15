@@ -6,7 +6,7 @@ scalable: true
 
 options:
 - version: '3.1'
-  tag: '3.1.1'
+  tag: '3.1.2'
   default: true
 
 endpoints:
