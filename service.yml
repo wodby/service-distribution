@@ -244,6 +244,8 @@ workloads:
   containers:
   - name: distribution
     image: registry
+    resources:
+      preset: nano
     helm:
       resources: resources
       env: envVars
